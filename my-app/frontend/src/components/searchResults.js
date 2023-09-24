@@ -19,9 +19,9 @@ export default function SearchResults () {
 		e.preventDefault()
     if(currentUser){
       setState('')
-      console.log(dap)
 		  await fetch(`${process.env.REACT_APP_BACKEND_URL}/users/${currentUser.user_id}/flight-paths`, {
 			  method: 'POST',
+        credentials: 'include',
 			  headers: {
 				  'Content-Type': 'application/json'
 			  },

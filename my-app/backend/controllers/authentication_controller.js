@@ -1,6 +1,5 @@
 // node dependencies
 const bcrypt = require('bcryptjs')
-const { Router } = require('express')
 const auth = require('express').Router()
 
 // import db
@@ -21,6 +20,7 @@ auth.post('/', async (req, res) => {
         })
     } else {
         req.session.userId = user.user_id
+        console.log(req)
         res.json({ user })
     }
 })
