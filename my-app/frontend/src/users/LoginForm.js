@@ -15,7 +15,7 @@ function LoginForm() {
 
     async function handleSubmit(e) {
         e.preventDefault()
-        const response = await fetch(`http://localhost:3001/authentication/`, {
+        const response = await fetch(`https://plenty-of-flights-backend.vercel.app/authentication/`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -69,7 +69,7 @@ function LoginForm() {
 					name="password"	
 				/>
         	</Form.Group>
-            <Button variant="primary" type="submit">Submit</Button>
+            <Button variant="primary" type="submit">Login</Button>
                 {/* <div>
                     <div>
                         <label htmlFor="email">Email</label>
