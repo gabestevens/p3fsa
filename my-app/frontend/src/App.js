@@ -11,10 +11,12 @@ import SignUpForm from './components/users/SignUpForm';
 import LoginForm from './components/users/LoginForm';
 import MySavedFlights from './components/MySavedFlights';
 import CurrentUserProvider from './context/CurrentUser';
+import ShowSavedFlight from './components/ShowSavedFlight';
 import { RetrieveContext } from './context/RetreiveContext';
 import { SearchContext } from './context/searchContext';
 import { DataContext } from './context/dataContext';
 import { createResource as fetchSearch} from './airportHelper';
+import UserPage from './components/users/UserPage';
 
 
 function App() {
@@ -68,6 +70,8 @@ function App() {
                 <Route path="/" element={<Error404/>} />
                 <Route path="/search" element={<SearchResults/>} />
                 <Route path="/mysavedflights" element={<MySavedFlights/>} />
+                <Route path="/mysavedflights/:id" element={<ShowSavedFlight />}/>
+                <Route path='/profilepage' element={<UserPage />} />
               </Routes> 
             </DataContext.Provider>
         </Router>

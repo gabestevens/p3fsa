@@ -1,11 +1,25 @@
-const users = require('express').Router()
-const db = require('../models')
-// const { Op } = require('sequelize')
+// node dependencies
 const bcrypt = require('bcryptjs')
+const users = require('express').Router()
 
+// import db
+const db = require('../models')
 const { User, FlightPath } = db
 
 /* USER INFO ROUTES */
+
+// get all users
+users.get('/', async (req,  res) => {
+    try {
+        const foundUsers = await User.findAll()
+        res.json(foundUsers)
+    } catch (error) {
+        res.status(500).json({
+            message: 'Database error',
+            error: error
+        })
+    }
+})
 
 // create a new user
 users.post('/', async (req, res) => {
@@ -22,6 +36,8 @@ users.post('/', async (req, res) => {
             email,
             passwordDigest: await bcrypt.hash(password, 10)
         })
+        // sign in new user upon creation
+        req.session.userId = user.user_id
         res.json(user)
     } else {
         res.status(403).json({
@@ -66,29 +82,18 @@ users.get('/:id/flight-paths', async (req, res) => {
 
 // create a new flight path
 users.post('/:id/flight-paths', async (req, res) => {
-    let { coords, aircraft_type, ...rest } = req.body
+    /* res.set('Access-Control-Allow-Origin', '*');
+    res.send({ "msg": "This has CORS enabled 🎈" }) */
+    let {dap, aap} = req.body
 
-    // check if flight path already exists
-    const foundPath = await FlightPath.findOne({
-        where: { 
-            coords: coords,
-            aircraft_type: aircraft_type,
-            user_id: Number(req.params.id)
-        }
+    const flightPath = await FlightPath.create({
+        user_id: req.params.id,
+        name: `${dap.name} to ${aap.name}`,
+        departure_airport: JSON.stringify(dap),
+        arrival_airport: JSON.stringify(aap),
+        date_created: new Date()
     })
-
-    if (!foundPath) {
-        const flightPath = await FlightPath.create({
-            ...req.body,
-            user_id: Number(req.params.id),
-            date_created: new Date()
-        })
-        res.json(flightPath)
-    } else {
-        res.status(403).json({
-            message: 'A flight path with this aircraft type and these flight coordinates already exists'
-        })
-    }
+    res.json(flightPath)
 })
 
 // get one flight path by id
@@ -105,18 +110,24 @@ users.get('/:userId/flight-paths/:pathId', async (req, res) => {
 
 // delete one flight path by id
 users.delete('/:userId/flight-paths/:pathId', async (req, res) => {
-    try {
-        const deletedPath = await FlightPath.destroy({
-            where: { 
-                user_id: Number(req.params.userId),
-                flight_path_id: Number(req.params.pathId) 
-            }
-        })
-        res.json(`Successfully deleted flight path id:${req.params.pathId} from user id:${req.params.userId}`)
-    } catch (error) {
-        res.status(500).json({
-            message: 'No flight path was deleted',
-            error
+    if (req.session.userId === req.params.userId) {
+        try {
+            const deletedPath = await FlightPath.destroy({
+                where: { 
+                    user_id: Number(req.params.userId),
+                    flight_path_id: Number(req.params.pathId) 
+                }
+            })
+            res.json(`Successfully deleted flight path id:${req.params.pathId} from user id:${req.params.userId}`)
+        } catch (error) {
+            res.status(500).json({
+                message: 'No flight path was deleted',
+                error
+            })
+        }
+    } else {
+        res.status(401).json({
+            message: 'No flight path was deleted'
         })
     }
 })
