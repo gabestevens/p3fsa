@@ -1,51 +1,24 @@
-import './App.css';
-import 'bootstrap/dist/css/bootstrap.min.css'
-import React, {useRef, useState} from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import SearchBar from './components/searchBar';
-import SearchResults from './components/searchResults';
-import { SearchContext } from './context/searchContext';
-import { DataContext } from './context/dataContext';
-import { createResource as fetchSearch} from './airportHelper';
+import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import Home from './Home'
+import Navigation from './Navigation'
+import Error404 from './Error404'
+import SignUpForm from './users/SignUpForm'
+import LoginForm from './users/LoginForm'
+import CurrentUserProvider from './contexts/CurrentUser'
 
 function App() {
-  let [dap,setDap] = useState(null)
-  let [aap,setAap] = useState(null)
-  let [airplane,setAirplane] = useState(null)
-
-  let searchDap = useRef('')
-  let searchAap = useRef('')
-  let searchMfg = useRef('')
-  let searchMdl = useRef('')
-
-  const API_URL = 'https://airportdb.io/api/v1/airport/'
-
-  const handleSearch = async (e, DepartAP, ArrivalAP) => {
-    e.preventDefault()
-    setDap(await fetchSearch(DepartAP, API_URL))
-    setAap(await fetchSearch(ArrivalAP, API_URL))
-    
-}
-
   return (
-    <div className="App">
-      <Router>
-        <SearchContext.Provider value={{
-          depart: searchDap,
-          arrive: searchAap,
-          manufacturer: searchMfg,
-          model: searchMdl,
-          handleSearch: handleSearch
-        }}>
-          <SearchBar/>
-          </SearchContext.Provider>
-          <DataContext.Provider value={{dap:{dap}, aap:{aap}}}>
+    <CurrentUserProvider>
+      <BrowserRouter>
+        <Navigation />
         <Routes>
-          <Route path="/search" element={<SearchResults/>} />
-        </Routes> 
-        </DataContext.Provider>
-      </Router>
-    </div>
+          <Route exact path="/" element={<Home/>} />
+          <Route exact path="/sign-up" element={<SignUpForm/>} />
+          <Route exact path="/login" element={<LoginForm/>} />
+          <Route path="/" element={<Error404/>} />
+        </Routes>
+      </BrowserRouter>
+    </CurrentUserProvider>
   );
 }
 

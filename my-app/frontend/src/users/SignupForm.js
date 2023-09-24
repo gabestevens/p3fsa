@@ -1,37 +1,33 @@
-import { useState, useEffect } from "react"
-import { useHistory, useParams } from "react-router"
+import { useState } from "react"
+import { useNavigate } from "react-router"
 
 function SignUpForm() {
-
-	const history = useHistory()
-
+	const navigate = useNavigate()
 	const [user, setUser] = useState({
 		name: '',
-        email: '',
+		email: '',
 		password: ''
 	})
 
 	async function handleSubmit(e) {
 		e.preventDefault()
-
-		await fetch(`https://plenty-of-flights-backend.vercel.app/users/`, {
+		await fetch(`http://localhost:3001/users/`, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json'
 			},
 			body: JSON.stringify(user)
 		})
-
-		history.push(`/`)
+		navigate(`/`)
 	}
 
 	return (
-		<main>
+		<>
 			<h1>Sign Up</h1>
 			<form onSubmit={handleSubmit}>
 				<div>
 					<div>
-						<label htmlFor="name">Name</label>
+						<label htmlFor="name">Create Your Name</label>
 						<input
 							required
 							value={user.name}
@@ -43,7 +39,7 @@ function SignUpForm() {
 				</div>
 				<div>
 					<div>
-						<label htmlFor="email">Email</label>
+						<label htmlFor="email">Enter Your Email Address</label>
 						<input
 							type="email"
 							required
@@ -53,10 +49,21 @@ function SignUpForm() {
 							name="email"
 						/>
 					</div>
+					<div>
+						<label htmlFor="password">Create Your Password</label>
+						<input
+							type="password"
+							required
+							value={user.password}
+							onChange={e => setUser({ ...user, password: e.target.value })}
+							id="password"
+							name="password"
+						/>
+					</div>
 				</div>
 				<input type="submit" value="Sign Up" />
 			</form>
-		</main>
+		</>
 	)
 }
 
