@@ -1,13 +1,26 @@
 // modules and globals
 require('dotenv').config()
-const express = require('express')
-const app = express()
-const bodyParser = require('body-parser')
-const cors = require('cors')
 require('pg')
 
+const express = require('express')
+const app = express()
+
+const cookieSession = require('cookie-session')
+const bodyParser = require('body-parser')
+const cors = require('cors')
+
 // express settings
-app.use(cors())
+app.use(cookieSession({
+    name: 'session',
+    sameSite: 'strict',
+    keys: [process.env.SESSION_SECRET],
+    maxAge: 24 * 60 * 60 * 1000 // 24 hours
+}))
+let localhosting = true
+app.use(cors({
+    origin: localhosting ? 'http://localhost:3000' : process.env.FRONTEND_URL,
+    credentials: true
+}))
 app.use(express.static('public'))
 app.use(express.urlencoded({ extended: true }))
 app.use(bodyParser.json())
@@ -17,27 +30,11 @@ const PORT = process.env.PORT || 3001
 
 /* CONTROLLERS AND ROUTES */
 
-// landing page port
+// landing page route
 app.get('/', (req, res) => {
     res.json({
         message: 'Welcome to Plenty of Flights backend API!'
     })
-})
-
-// verify the connection to the database
-app.get('/verify-connection', async (req, res) => {
-    const db = require('./models')
-    try {
-        await db.sequelize.authenticate()
-        res.json({
-            message: 'Connection has been established successfully.'
-        })
-    } catch(error) {
-        res.status(502).json({
-            message: 'Uncable to connect to the database.',
-            error
-        })
-    }
 })
 
 // controllers
