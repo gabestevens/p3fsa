@@ -1,34 +1,38 @@
-const { Sequelize, DataTypes, Model } = require('sequelize')
-const FlightPath = require('./flightPath')
-const sequelize = new Sequelize(process.env.DATABASE_URL)
-
-class User extends Model{}
-
-User.hasMany(FlightPath, { as: 'flightPaths'})
-
-User.init({
+'use strict';
+const { Model } = require('sequelize');
+module.exports = (sequelize, DataTypes) => {
+  class User extends Model {
+    static associate({ FlightPath }) {
+      // flight paths
+      User.hasMany(FlightPath, {
+        foreignKey: "user_id",
+        as: "flight_paths"
+      })
+    }
+  }
+  User.init({
     user_id: {
-        type: DataTypes.INTEGER,
-        primaryKey: true,
-        autoIncrement: true
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true
     },
     name: {
-        type: DataTypes.STRING,
-        allowNull: false
+      type: DataTypes.STRING,
+      allowNull: false
     },
     email: {
-        type: DataTypes.STRING,
-        allowNull: false
+      type: DataTypes.STRING,
+      allowNull: false
     },
-    password: {
-        type: DataTypes.STRING,
-        allowNull: false
-    }
-}, {
+    passwordDigest: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+  }, {
     sequelize,
     modelName: 'User',
-    tableName: 'user',
+    tableName: 'users',
     timestamps: false
-})
-
-module.exports = User
+  });
+  return User;
+};
