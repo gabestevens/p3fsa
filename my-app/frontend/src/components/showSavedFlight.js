@@ -1,32 +1,72 @@
-import React, {Suspense, useContext, useEffect, useState} from "react";
-import { useParams } from "react-router";
-import Spinner from "./spinner";
-import Map from "./Map";
-import {CurrentUser} from '../context/CurrentUser';
+import { useContext } from 'react'
+import { CurrentUser } from '../context/CurrentUser';
+import Container from 'react-bootstrap/Container';
+import Nav from 'react-bootstrap/Nav';
+import Navbar from 'react-bootstrap/Navbar';
+import { useNavigate } from "react-router"
 
-function ShowSavedFlight(setDap, setAap) {
-    const {id} = useParams()
-    const [pathName, setPathName] = useState()
-    const {currentUser} = useContext(CurrentUser)
+function Navigation() {
+    const { currentUser } = useContext(CurrentUser)
+    const navigate = useNavigate()
 
-    useEffect(() => {
-        fetch(`https://plenty-of-flights-backend.vercel.app/users/${currentUser.user_id}/flight-paths/${id}`)
-            .then(res => res.json())
-            .then(({departure_airport, arrival_airport, name}) => {
-                setDap(departure_airport)
-                setAap(arrival_airport)
-                setPathName(name)
-            })
-    }, [])
+    let loginActions = (
+      <>
+        <Navbar collapseOnSelect expand="lg" bg="light" variant="light" sticky="top">
+          <Container>
+            <Navbar.Brand href="/"><h1>P O F</h1></Navbar.Brand>
+            <Navbar.Toggle aria-controls="responsive-navbar-nav" />
+            <Navbar.Collapse id="responsive-navbar-nav">
+              <Nav className="me-auto">
+                <Nav.Link href="/">Home</Nav.Link>
+                {
+                  currentUser
+                  ? <Nav.Link href='/mysavedflights'>My Saved Flights</Nav.Link>
+                  : <Nav.Link href="/sign-up">Sign Up</Nav.Link>
+                }
+                {
+                  currentUser
+                  ? <Nav.Link href='/profilepage'>My Profile</Nav.Link>
+                  : <Nav.Link href="/login">Login</Nav.Link>
+                }
+              </Nav>
+            </Navbar.Collapse>
+            {
+              currentUser
+              ? (
+                <Navbar.Collapse className='justify-content-end'>
+                  <Navbar.Text>
+                    Signed in as <b>{currentUser.name}</b>
+                  </Navbar.Text>
+                </Navbar.Collapse>
+              )
+              : null
+            }
+          </Container>
+        </Navbar>
+      </>
+    )
+
+    /* if (currentUser) {
+      loginActions = (
+      <>
+        <li>
+          <h2>Logged in as {currentUser.name}</h2>
+        </li>
+        <li>
+          <Button onClick={() => navigate("/mysavedflights")}>Go to My Saved Flights</Button>
+          <Button onClick={() => navigate("/profilepage")}>My Profile</Button>
+        </li>
+      </>
+      )
+    } */
 
     return (
-        <div>
-            <h1>{pathName}</h1>
-            <Suspense fallback={<Spinner />}>
-              <Map newFlight={false} />
-            </Suspense>
-        </div>
+        <nav>
+            <ul style={{ listStyle: 'none' }}>         
+                {loginActions}
+            </ul>
+        </nav>
     )
 }
 
-export default ShowSavedFlight
+export default Navigation;
