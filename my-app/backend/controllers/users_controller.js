@@ -1,7 +1,7 @@
 const users = require('express').Router()
 const db = require('../models')
 // const { Op } = require('sequelize')
-const bcrypt = require('bcrypt')
+const bcrypt = require('bcryptjs')
 
 const { User, FlightPath } = db
 
@@ -52,6 +52,7 @@ users.delete('/:id', async (req, res) => {
 // get all flight paths of a user
 users.get('/:id/flight-paths', async (req, res) => {
     try {
+        await db.sequelize.authenticate()
         const foundFlightPaths = await FlightPath.findAll({
             where: { user_id: req.params.id }
         })
