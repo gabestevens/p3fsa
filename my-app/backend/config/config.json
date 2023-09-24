@@ -1,0 +1,41 @@
+{
+    "development": {
+      "username": "gabestevens",
+      "password": "QG5etVSidg9T",
+      "database": "neondb",
+      "host": "ep-summer-snow-041342.us-east-2.aws.neon.tech",
+      "dialect": "postgres",
+      "dialectOptions": {
+        "ssl": {
+          "require": "true",
+          "rejectUnauthorized": "false"
+        }
+      }
+    },
+    "test": {
+      "username": "gabestevens",
+      "password": "QG5etVSidg9T",
+      "database": "neondb",
+      "host": "ep-summer-snow-041342.us-east-2.aws.neon.tech",
+      "dialect": "postgres",
+      "dialectOptions": {
+        "ssl": {
+          "require": "true",
+          "rejectUnauthorized": "false"
+        }
+      }
+    },
+    "production": {
+      "username": "gabestevens",
+      "password": "QG5etVSidg9T",
+      "database": "neondb",
+      "host": "ep-summer-snow-041342.us-east-2.aws.neon.tech",
+      "dialect": "postgres",
+      "dialectOptions": {
+        "ssl": {
+          "require": "true",
+          "rejectUnauthorized": "false"
+        }
+      }
+    }
+  }
