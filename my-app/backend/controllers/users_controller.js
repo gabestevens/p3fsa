@@ -2,6 +2,7 @@ const users = require('express').Router()
 const db = require('../models')
 // const { Op } = require('sequelize')
 const bcrypt = require('bcryptjs')
+const { DatabaseError, InstanceError, ConnectionError } = require('sequelize')
 
 const { User, FlightPath } = db
 
@@ -10,14 +11,29 @@ const { User, FlightPath } = db
 // get all users
 users.get('/', async (req,  res) => {
     try {
-        console.log('trying to find the users')
+        console.log('trying to find the users', db)
         const foundUsers = await User.findAll()
         console.log('users here:', foundUsers)
         res.json(foundUsers)
     } catch (error) {
+        switch (error) {
+            case DatabaseError:
+                console.log('DatabaseError')
+                break;
+            case DatabaseError:
+                console.log('Sequelize Db Error')
+                break;
+            case InstanceError:
+                console.log('Sequelize instance Error')
+                break;
+            case ConnectionError:
+                console.log('Sequelize connection Error')
+                break;
+        }
+        console.log(typeof error)
         res.status(500).json({
             message: 'Database error',
-            error
+            error: error
         })
     }
 })
@@ -67,7 +83,9 @@ users.delete('/:id', async (req, res) => {
 
 // get all flight paths of a user
 users.get('/:id/flight-paths', async (req, res) => {
-    try {
+    const foundFlightPaths = await FlightPath.findAll()
+    res.json(foundFlightPaths)
+    /* try {
         const foundFlightPaths = await FlightPath.findAll({
             where: { user_id: req.params.id }
         })
@@ -77,7 +95,7 @@ users.get('/:id/flight-paths', async (req, res) => {
             message: 'Database error',
             error
         })
-    }
+    } */
 })
 
 // create a new flight path
